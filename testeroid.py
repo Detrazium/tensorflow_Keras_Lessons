@@ -29,7 +29,7 @@ y_train = y_train[y_train == 7]
 
 BUFFER_SIZE = x_train.shape[0]
 BATCH_SIZE = 100
-
+print(x_train.shape)
 BUFFER_SIZE = BUFFER_SIZE // BATCH_SIZE * BATCH_SIZE
 x_train = x_train[:BUFFER_SIZE]
 y_train = y_train[:BUFFER_SIZE]
