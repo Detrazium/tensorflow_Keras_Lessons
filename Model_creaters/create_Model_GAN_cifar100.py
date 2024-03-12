@@ -85,9 +85,14 @@ class Mygan_N_1():
 		BUFFER_SIZE = x_train.shape[0]
 		BUFFER_SIZE = BUFFER_SIZE // BATCH_SIZE * BATCH_SIZE
 		x_train = x_train[:BUFFER_SIZE]
+		y_train = y_test[:BUFFER_SIZE]
 		x_train = x_train / 255
+		x_test = x_test / 255
+
 		x_train = np.reshape(x_train, (len(x_train), 32, 32, 3))
 		dataset = tf.data.Dataset.from_tensor_slices(x_train).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
+		if key == "press born":
+			return x_train, y_train, x_test, y_test
 		return dataset, BUFFER_SIZE, BATCH_SIZE
 	def gen_loss(self, ff):
 		loss = self.Cross_Entropy(tf.ones_like(ff), ff)
@@ -132,7 +137,7 @@ class Mygan_N_1():
 				xpl = plt.subplot(total, total, num)
 				num += 1
 				imm = self.generator.predict(np.expand_dims([0.5 * i / n, 0.5* jj / n], axis= 0))
-				plt.imshow(imm[0, :, :, 0], cmap='gray')
+				plt.imshow(imm[0, :, :, 0])
 				xpl.get_xaxis().set_visible(False)
 				xpl.get_yaxis().set_visible(False)
 		plt.show()
@@ -160,12 +165,54 @@ class Mygan_N_1():
 		return self.history_plot(history)
 	def model_saving(self):
 		"""Saving Model"""
-		self.generator.save("Generator''Mygan_N_1()''.h5")
-		self.discriminator.save('Discriminator""Mygan_N_1()"".h5')
+		self.generator.save("Generator__Mygan_N.h5")
+		self.discriminator.save('Discriminator_Mygan_N.h5')
+
+class Test_v1_My_GAN():
+	def __init__(self):
+		self.Discriminator = keras.models.load_model('Discriminator_Mygan_N.h5')
+		self.Generator = keras.models.load_model('Generator__Mygan_N.h5')
+
+	def Test_One(self):
+		n = 2
+		total = 2 * n + 1
+		plt.figure(figsize=(total, total))
+		num = 1
+		for i in range(-n, n + 1):
+			for jj in range(-n, n + 1):
+				xpl = plt.subplot(total, total, num)
+				num += 1
+				imm = self.Generator.predict(np.expand_dims([0.5 * i / n, 0.5 * jj / n], axis=0))
+				plt.imshow(imm[0]*1.5)
+				xpl.get_xaxis().set_visible(False)
+				xpl.get_yaxis().set_visible(False)
+		plt.show()
+		print(imm[0])
+		plt.imshow(imm[0]+1)
+		plt.show()
+		kk = Mygan_N_1()
+		x_train, y_train, x_test, y_test = kk.Dataset(key="press born")
+		print(x_train.shape)
+
+
+def Metods(key = None):
+	if key == '--Create and Train':
+		gen = Mygan_N_1()
+		gen.Train(EPOCHS=2, Num_class=19)
+		# gen.model_saving()
+
+	elif key == '--Load and train |OR| load and touch':
+		Test_v1_My_GAN().Test_One()
+		print('load')
+	else:
+		raise ValueError('Nothing metod: press to metod')
+
+
+
 def main():
-	gen = Mygan_N_1()
-	gen.Train(EPOCHS = 10, Num_class = 19)
-	# gen.model_saving()
+	# Metods('--Create and Train')
+	Metods('--Load and train |OR| load and touch')
+	# Metods(None)
 
 if __name__ == '__main__':
 	main()
